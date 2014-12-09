@@ -21,9 +21,8 @@ Amilia goes beyond online registrations by providing you with an online store an
 == Installation ==
 
 1. Unpack archive to this archive to the 'wp-content/plugins/' directory inside
-   of WordPress
-  * Maintain the directory structure of the archive (all extracted files
-    should exist in 'wp-content/plugins/amilia-button/'
+   of WordPress. Maintain the directory structure of the archive (all extracted files
+   should exist in 'wp-content/plugins/amilia-button/'.
 2. Activate the Amilia Button plugin through the 'Plugins' menu in WordPress.
    The Amilia button tool will appear in your editor.
 

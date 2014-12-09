@@ -4,13 +4,19 @@ Tags: e-commerce, online registrations, store, amilia, button
 Requires at least: 2.8
 Tested up to: 4.0
 Stable tag: trunk
+License: MIT
+License URI: https://github.com/AmiliaApp/amilia-button-wp/blob/master/LICENSE
 
 The Amilia Button allows you to create a beautiful button to redirect your customers to your Amilia Store.
 
 == Description ==
 
-Amilia - Online, not in line. We take online registration to the next level.
+[Amilia](http://www.amilia.com) - Online, not in line. We take online registration to the next level.
 Amilia goes beyond online registrations by providing you with an online store and a shopping experience that your clients are familiar with. They can add classes, memberships, merchandise to their cart and pay using our simple checkout process.
+
+== Screenshots ==
+
+1. The Amilia Button tool appears in your editor. It allows you to insert an Amilia redirection button. It works like a link. Click again to update or remove the button.
 
 == Installation ==
 

@@ -3,7 +3,8 @@
   var PLUGIN_NAME = "amilia_button",
       AMILIA_URL = "http://www.amilia.com",
       IMAGE_BASE_URL = "http://app.amilia.com/buttons",
-      COLORS = {g: '#40d892', dg: '#28b172', b: '#46aaf8', db: '#158ae5', o: '#fba16b', r: '#fb5b5b', y: '#fce162', steel: '#8294ab'};
+      COLORS = {g: '#40d892', dg: '#28b172', b: '#46aaf8', db: '#158ae5', o: '#fba16b', r: '#fb5b5b', y: '#fce162', steel: '#8294ab'},
+      IMAGES = ["check", "edit", "lock"];
 
   tinyMCE.addI18n("en.amilia_button", {
     "modal-title": "Button for Redirection to Amilia",
@@ -14,10 +15,8 @@
     "close": "Close",
     "text": "Button text",
     "text-value": "Register online",
-    "powered-text": "Powered by",
     "image": "Image",
     "color": "Color",
-    "language": "Language",
     "g": "Green",
     "dg": "Dark Green",
     "b": "Blue",
@@ -36,7 +35,7 @@
     "help": "Help",
     "instructions": "Instructions",
     "instructions-p1": "Navigate to the page of your store, or the registration page. Copie the URL from the address bar, and paste in the field URL.",
-    "instructions-p2": "Choose the color, the image, the text and language. Then insert the button on your page.",
+    "instructions-p2": "Choose the color, the image and the text. Then insert the button on your page.",
     "instructions-p3": "You can modify or remove it later, by positioning the cursor on the Amilia button. Click again on the Amilia tool icon."
   });
 
@@ -49,10 +48,8 @@
     "close": "Fermer",
     "text": "Texte du bouton",
     "text-value": "Inscription en ligne",
-    "powered-text": "Propulsé par",
     "image": "Image",
     "color": "Couleur",
-    "language": "Langue",
     "g": "Vert",
     "dg": "Vert foncé",
     "b": "Bleu",
@@ -71,7 +68,7 @@
     "help": "Aide",
     "instructions": "Instructions",
     "instructions-p1": "Naviguer vers la page de votre boutique ou vers la page d'inscription. Copier l'addresse (URL) de votre navigateur, et coller là dans le champs URL.",
-    "instructions-p2": "Choisir la couleur, l'image, le texte et la langue. Ensuite l'insérer dans votre page.",
+    "instructions-p2": "Choisir la couleur, l'image et le texte. Ensuite l'insérer dans votre page.",
     "instructions-p3": "Vous pourez le modifier ou l'effacer plus tard, en poisitionnant le curseur sur le bouton Amilia, et en cliquant sur l'outil Amilia."
   });
 
@@ -88,9 +85,9 @@
     '      <select name="color">',
     '        <option value="g">{g}</option>',
     '        <option value="dg">{dg}</option>',
-    '        <option value="b">{b}</option>',
+    '        <option selected="selected" value="b">{b}</option>',
     '        <option value="db">{db}</option>',
-    '        <option selected="selected" value="o">{o}</option>',
+    '        <option value="o">{o}</option>',
     '        <option value="r">{r}</option>',
     '        <option value="y">{y}</option>',
     '        <option value="steel">{steel}</option>',
@@ -107,13 +104,6 @@
     '    <div>',
     '      <label>{text}</label>',
     '      <input type="text" name="text" value="{text-value}" />',
-    '    </div>',
-    '    <div>',
-    '      <label>{language}</label>',
-    '      <select name="language">',
-    '        <option selected="selected" value="en">{english}</option>',
-    '        <option value="fr">{french}</option>',
-    '      </select>',
     '    </div>',
     '  </div>',
     '  <div class="amilia-right">',
@@ -143,10 +133,7 @@
           '{text}',
         '</span>',
       '</span>',
-    '</a>',
-    '<span style="display:block; text-align:right; padding:2px 4px 0 0; color:#696969; font:11px/15px arial;">',
-      '{poweredText} <a class="amilia-powered-by" href="{amiliaUrl}" target="_blank" style="color:#696969;">Amilia.com</a>',
-    '</span>'
+    '</a>'
   ].join('');
 
   function lang(key, lang) {
@@ -169,6 +156,28 @@
     return text.replace(/^\s\s*/, '').replace(/\s\s*$/, '').length > 0;
   };
 
+  function getColor(backgroundColor) {
+    backgroundColor || (backgroundColor = "");
+    var hexDigits = new Array ("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"); 
+    function hex(x) {
+      return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+    }
+    function rgb2hex(rgb) {
+     rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+     return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+    backgroundColor = rgb2hex(backgroundColor);
+    for (var key in COLORS)
+      if (COLORS.hasOwnProperty(key) && backgroundColor == COLORS[key]) return key;
+    return "b";
+  }
+
+  function getImage(backgroundImage) {
+    backgroundImage || (backgroundImage = "");
+    for (var i = 0; i < IMAGES.length; i++)
+      if (backgroundImage.indexOf(IMAGES[i]) != -1) return IMAGES[i];
+    return IMAGES[0];
+  }
 
   tinymce.PluginManager.add(PLUGIN_NAME, function(editor, url) {
     tinymce.DOM.loadCSS(url + "/amilia-button.css");
@@ -191,7 +200,6 @@
         color = modal.querySelector("select[name=color]"),
         image = modal.querySelector("select[name=image]"),
         text = modal.querySelector("input[name=text]"),
-        language = modal.querySelector("select[name=language]"),
         preview = modal.querySelector("#amilia-button-preview"),
         insertButton = modal.querySelector("button[name=insert]"),
         updateButton = modal.querySelector("button[name=update]"),
@@ -208,9 +216,7 @@
         .replace('{color}', COLORS[color.value] == 'y' ? '#494949' : '#ffffff')
         .replace('{backgroundColor}', COLORS[color.value])
         .replace('{imageUrl}', IMAGE_BASE_URL + "/" + image.value + ".png")
-        .replace('{text}', text.value)
-        .replace('{poweredText}', lang("powered-text", language.value))
-        .replace('{amiliaUrl}', AMILIA_URL + "/" + tinymce.activeEditor.settings.language);
+        .replace('{text}', text.value);
       if (!no_wrapper) html = '<div class="amilia-button-wrapper" style="width:175px;">' + html + '</div>';
       return html;
     }
@@ -236,7 +242,7 @@
       modal.style.display = "none";
     }
 
-    color.onchange = image.onchange =  text.onchange = language.onchange = updatePreview;
+    color.onchange = image.onchange =  text.onchange = updatePreview;
     insertButton.onclick = function(e) {
       if (!validate()) return;
       editor.execCommand("mceInsertRawHTML", false, generateRawHtml());
@@ -269,7 +275,13 @@
     function showModal() {
       activeElement = getActiveElement();
       if (activeElement) {
-        storeUrl.value = activeElement.querySelector("a.amilia-button").href;
+        var button = activeElement.querySelector("a.amilia-button");
+        if (button) {
+          storeUrl.value = button.href;
+          color.value = getColor(button.style.backgroundColor);
+          image.value = getImage(button.style.backgroundImage);
+          text.value = button.querySelector("span span").textContent;
+        }
         insertButton.style.display = "none";
         updateButton.style.display = "inline";
         deleteButton.style.display = "inline";

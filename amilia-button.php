@@ -21,7 +21,7 @@ function amilia_add_mce_button() {
 add_action('admin_head', 'amilia_add_mce_button');
 
 function amilia_add_tinymce_plugin($plugin_array) {
-    $plugin_array['amilia_button'] = plugins_url('amilia-button') . '/amilia-button.js';
+    $plugin_array['amilia_button'] = plugins_url('amilia-button.js', __FILE__);
     return $plugin_array;
 }
 

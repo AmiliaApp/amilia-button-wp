@@ -157,16 +157,13 @@
   };
 
   function getColor(backgroundColor) {
-    backgroundColor || (backgroundColor = "");
     var hexDigits = new Array ("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"); 
     function hex(x) {
       return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
     }
-    function rgb2hex(rgb) {
-     rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-     return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-    }
-    backgroundColor = rgb2hex(backgroundColor);
+    backgroundColor || (backgroundColor = "");
+    var rgb = backgroundColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    backgroundColor = "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
     for (var key in COLORS)
       if (COLORS.hasOwnProperty(key) && backgroundColor == COLORS[key]) return key;
     return "b";
@@ -245,7 +242,7 @@
     color.onchange = image.onchange =  text.onchange = updatePreview;
     insertButton.onclick = function(e) {
       if (!validate()) return;
-      editor.execCommand("mceInsertRawHTML", false, generateRawHtml());
+      editor.execCommand("mceInsertRawHTML", false, generateRawHtml() + "<p></p>");
       close();
     };
     updateButton.onclick = function(e) {

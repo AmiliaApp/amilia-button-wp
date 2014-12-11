@@ -1,8 +1,6 @@
 (function() {
 
   var PLUGIN_NAME = "amilia_button",
-      AMILIA_URL = "http://www.amilia.com",
-      IMAGE_BASE_URL = "http://app.amilia.com/buttons",
       COLORS = {g: '#40d892', dg: '#28b172', b: '#46aaf8', db: '#158ae5', o: '#fba16b', r: '#fb5b5b', y: '#fce162', steel: '#8294ab'},
       IMAGES = ["check", "edit", "lock"];
 
@@ -205,17 +203,15 @@
         help1 = modal.querySelector("a.amilia-help1"),
         help2 = modal.querySelector("a.amilia-help2"),
         instructions = modal.querySelector(".amilia-instructions"),
-        activeElement = null;
+        activeButton = null;
 
-    function generateRawHtml(no_wrapper) {
-      var html = buttonTemplate
+    function generateRawHtml() {
+      return buttonTemplate
         .replace('{url}', storeUrl.value)
         .replace('{color}', COLORS[color.value] == 'y' ? '#494949' : '#ffffff')
         .replace('{backgroundColor}', COLORS[color.value])
-        .replace('{imageUrl}', IMAGE_BASE_URL + "/" + image.value + ".png")
+        .replace('{imageUrl}', url + "/" + image.value + ".png")
         .replace('{text}', text.value);
-      if (!no_wrapper) html = '<div class="amilia-button-wrapper" style="width:175px;">' + html + '</div>';
-      return html;
     }
 
     function updatePreview() {
@@ -247,14 +243,14 @@
     };
     updateButton.onclick = function(e) {
       if (!validate()) return;
-      activeElement.innerHTML = "";
-      editor.execCommand("mceRemoveNode", false, activeElement);
+      activeButton.innerHTML = "";
+      editor.execCommand("mceRemoveNode", false, activeButton);
       editor.execCommand("mceInsertRawHTML", false, generateRawHtml());
       close();
     }
     deleteButton.onclick = function(e) {
-      activeElement.innerHTML = "";
-      editor.execCommand("mceRemoveNode", false, activeElement);
+      activeButton.innerHTML = "";
+      editor.execCommand("mceRemoveNode", false, activeButton);
       close();
     }
     cancelButton.onclick = close;
@@ -265,19 +261,18 @@
       return false;
     }
 
-    function getActiveElement() {
-      return editor.dom.getParent(editor.selection.getNode(), "div.amilia-button-wrapper");
+    function getActiveButton() {
+      return editor.dom.getParent(editor.selection.getNode(), "a.amilia-button");
     }
 
     function showModal() {
-      activeElement = getActiveElement();
-      if (activeElement) {
-        var button = activeElement.querySelector("a.amilia-button");
-        if (button) {
-          storeUrl.value = button.href;
-          color.value = getColor(button.style.backgroundColor);
-          image.value = getImage(button.style.backgroundImage);
-          text.value = button.querySelector("span span").textContent;
+      activeButton = getActiveButton();
+      if (activeButton) {
+        if (activeButton) {
+          storeUrl.value = activeButton.href;
+          color.value = getColor(activeButton.style.backgroundColor);
+          image.value = getImage(activeButton.style.backgroundImage);
+          text.value = activeButton.querySelector("span span").textContent;
         }
         insertButton.style.display = "none";
         updateButton.style.display = "inline";
@@ -295,21 +290,13 @@
 
 
     // The TineMCE button
-    var buttonSettings = {
-      onclick: showModal
-    };
-
-    if (tinymce.majorVersion < 4) {
-      buttonSettings.title = "Amilia Button";
-      buttonSettings.image = url + "/amilia-button.png";
-    } else {
-      buttonSettings.tooltip = "Amilia Button";
-      buttonSettings.icon = url + "/amilia-button.png";
-    }
-
-    editor.addButton(PLUGIN_NAME, buttonSettings);
+    editor.addButton(PLUGIN_NAME, {
+      onclick: showModal,
+      title: "Amilia Button",
+      image: url + "/amilia-button.png"
+    });
     editor.onNodeChange.add(function(editor, controllManager, node) {
-      controllManager.setActive(PLUGIN_NAME, getActiveElement() != null);
+      controllManager.setActive(PLUGIN_NAME, getActiveButton() != null);
     });
 
   });

@@ -2,7 +2,8 @@
 
   var PLUGIN_NAME = "amilia_button",
       COLORS = {g: '#40d892', dg: '#28b172', b: '#46aaf8', db: '#158ae5', o: '#fba16b', r: '#fb5b5b', y: '#fce162', steel: '#8294ab'},
-      IMAGES = ["check", "edit", "lock"];
+      IMAGES = ["check", "edit", "lock"],
+      dictionnary = typeof tinymce.i18n.data == "object" ? tinymce.i18n.data : tinymce.i18n;
 
   tinyMCE.addI18n("en.amilia_button", {
     "modal-title": "Button for Redirection to Amilia",
@@ -137,7 +138,7 @@
   function lang(key, lang) {
     lang || (lang = tinymce.activeEditor.settings.language);
     if (lang != "fr") lang = "en";
-    return tinymce.i18n[lang + '.' + PLUGIN_NAME + '.' + key] || key;
+    return dictionnary[lang + '.' + PLUGIN_NAME + '.' + key] || key;
   }
 
   function localize(template) {
